@@ -22,14 +22,18 @@ fi
 echo "Checking if Xcode command line tools are installed..."
 xcode-select -p
 if [[ $? != 0 ]]; then
-	xcode-select --install
+	echo "It looks like you don't have Xcode command line tools installed. Please install them using \"xcode-select --install\"."
+	echo "Exiting..."
+	exit
 fi
 
 # Detect if homebrew is installed
 echo "Checking if homebrew is installed and up-to-date..."
 command -v brew
 if [[ $? != 0 ]] ; then
-	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	echo "It looks like you don't have homebrew install. Head to https://brew.sh to install it."
+	echo "Exiting..."
+	exit
 else
 	brew update
 fi
@@ -46,7 +50,12 @@ mkdir -p $PREFIX
 # Install Dependencies with Homebrew
 brew install gmp mpfr libmpc autoconf automake
 
-# binutils
+# Create Variables to their locations for GCC build
+GMP=`brew --prefix gmp`
+LIBMPC=`brew --prefix libmpc`
+MPFR=`brew --prefix mpfr`
+
+# Compile and Install binutils
 echo ""
 echo "Installing \`binutils\`"
 echo ""
@@ -65,16 +74,19 @@ if [ ! -d "binutils-2.25" ]; then
 fi
 
 # gcc
+echo ""
+echo "Installing \`gcc\`"
+echo ""
 cd $HOME/src
 
-if [ ! -d "gcc-11.4.0" ]; then
-  curl https://ftp.gnu.org/gnu/gcc/gcc-11.4.0/gcc-11.4.0.tar.xz > gcc-11.4.0.tar.gz
-  tar xfz gcc-11.4.0.tar.gz
+if [ ! -d "gcc-12.3.0" ]; then
+  curl https://ftp.gnu.org/gnu/gcc/gcc-12.3.0/gcc-12.3.0.tar.xz > gcc-12.3.0.tar.gz
+  tar xfz gcc-12.3.0.tar.gz
 
-  rm gcc-11.4.0.tar.gz
+  rm gcc-12.3.0.tar.gz
   mkdir -p build-gcc
   cd build-gcc
-  ../gcc-11.4.0/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers --with-gmp=/opt/homebrew/Cellar/gmp/6.2.1_1 --with-mpfr=/opt/homebrew/Cellar/mpfr/4.2.0-p9 --with-mpc=/opt/homebrew/Cellar/libmpc/1.3.1
+  ../gcc-12.3.0/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers --with-gmp="$GMP" --with-mpfr="$MPFR" --with-mpc="$MPC"
   make all-gcc
   make all-target-libgcc
   make install-gcc
@@ -82,7 +94,9 @@ if [ ! -d "gcc-11.4.0" ]; then
 fi
 
 # objconv
-
+echo ""
+echo "Installing \`objconv\`"
+echo ""
 cd $HOME/src
 
 if [ ! -d "objconv.zip" ]; then
@@ -97,7 +111,9 @@ if [ ! -d "objconv.zip" ]; then
 fi
 
 # grub
-
+echo ""
+echo "Installing \`grub\`"
+echo ""
 cd $HOME/src
 
 if [ ! -d "grub" ]; then

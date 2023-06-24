@@ -7,7 +7,8 @@ ENTRY(_start)
 SECTIONS
 {
 	/* Begin putting sections at 1 MiB, a conventional place for kernels to be
-	   loaded at by the bootloader. */
+	   loaded at by the bootloader. Data before this is used during booting and in
+     real mode. */
 	. = 1M;
  
 	/* First put the multiboot header, as it is required to be put very early

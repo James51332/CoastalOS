@@ -16,15 +16,23 @@ OBJS = $(patsubst %.c,%.o,$(CFILES)) \
 				$(patsubst %.s,%.o,$(SFILES))
 
 .PHONY: all clean qemu
-all: CoastalOS.bin
+all: CoastalOS.iso
 
 clean:
 	rm -rf $(OBJS)
 	rm -f CoastalOS.bin
+	rm -f CoastalOS.iso
+	rm -rf isodir
 	
-qemu: CoastalOS.bin
-	qemu-system-i386 --kernel CoastalOS.bin
+qemu: CoastalOS.iso
+	qemu-system-i386 -cdrom CoastalOS.iso
 	
+CoastalOS.iso: CoastalOS.bin
+	mkdir -p isodir/boot/grub
+	cp CoastalOS.bin isodir/boot/CoastalOS.bin
+	cp grub.cfg isodir/boot/grub/grub.cfg
+	grub-mkrescue -o CoastalOS.iso isodir
+
 CoastalOS.bin: $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o CoastalOS.bin
 

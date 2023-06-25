@@ -7,7 +7,9 @@
 // ---- TTY Interface -----
 
 void terminal_init(void);
+
 void terminal_clear(void);
+void terminal_scroll(size_t);
 
 void terminal_setcolor(uint8_t);
 

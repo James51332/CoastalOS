@@ -3,7 +3,7 @@ ARCH = i686-elf
 CC = $(ARCH)-gcc
 AS = $(ARCH)-as
 
-CCFLAGS = -O2 -Wall -ffreestanding -std=gnu99 -std=gnu99
+CCFLAGS = -O2 -Wall -ffreestanding -std=gnu99 -std=gnu99 -Ikernel/arch/$(ARCH)
 LDFLAGS = -T kernel/arch/$(ARCH)/linker.ld -ffreestanding -O2 -nostdlib
 
 CFILES = $(shell find kernel/src -type f -name '*.c') \
